@@ -191,8 +191,9 @@ function checkKey(e) {
     }
   }
 
+    var free;
   function isSpaceFree(newFood) {
-    var free = true;
+    free = true;
     for (var i = 0; i < snake.length; i++) {
       if (snake[i].position === newFood) {
         if (free === false) {
