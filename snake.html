@@ -1,0 +1,438 @@
+<html>
+  <body>
+    <button class="start-button" onclick="start()">Start</button>
+    <div class="ledstrip LEDStrip">
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <br />
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <br />
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <br />
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <br />
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <br />
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <br />
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <br />
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+      <div class="ledlight LEDLight"></div>
+    </div>
+  </body>
+</html>
+
+<style>
+  .ledstrip {
+    float: left;
+  }
+  .ledlight {
+    display: block;
+    width: 50px;
+    height: 50px;
+    float: left;
+    border: 1px solid #ddd;
+    background-color: #000;
+    margin: 2px;
+  }
+  .start-button {
+    height: 50px;
+    width: 100px;
+    position: relative;
+    left: 100px;
+  }
+</style>
+
+<script>
+  document.onkeydown = checkKey;
+function checkKey(e) {
+    e = e || window.event;
+    if (e.keyCode == '38') {
+        // up arrow
+        currentDirection = "up";
+        // up();
+    }
+    else if (e.keyCode == '40') {
+        // down arrow
+        currentDirection = "down";
+        // down();
+    }
+    else if (e.keyCode == '37') {
+       // left arrow
+       currentDirection = "left";
+      //  left();
+    }
+    else if (e.keyCode == '39') {
+       // right arrow
+       currentDirection = "right";
+      //  right();
+    }
+}
+
+  var ledArray = document.getElementsByClassName("ledlight");
+  var snake = [];
+  var food;
+  var currentDirection;
+
+  function start() {
+    reset();
+    currentDirection = "right";
+    hit = false;
+    snake = [];
+    snake.push({
+      position: 2,
+      color: "rgb(255,0,255)",
+      head: true,
+      tail: false
+    });
+    snake.push({
+      position: 1,
+      color: "rgb(255,0,0)",
+      head: false,
+      tail: false
+    });
+    snake.push({
+      position: 0,
+      color: "rgb(255,0,0)",
+      head: false,
+      tail: true
+    });
+
+    var startInterval = setInterval((function moveSnake(){
+      if (hit===true){
+        clearInterval(startInterval);
+      }
+      else if (currentDirection === "right"){
+        moveInCurrentDirection('right');
+        // right();
+      } else if (currentDirection === "down"){
+        moveInCurrentDirection('down');
+        // down();
+      } else if (currentDirection === "left"){
+        moveInCurrentDirection('left');
+        // left();
+      } else if (currentDirection === "up"){
+        moveInCurrentDirection('up');
+        // up();
+      }
+      return moveSnake;
+    })(), 200);
+
+    food = createFood();
+    renderSnake();
+  }
+  
+  function createFood() {
+    var newFood;
+    if (snake.length === 64) {
+      alert("you have won the game");
+    } else {
+      newFood = Math.floor(Math.random() * 63 + 0);
+      while (isSpaceFree(newFood) === false || newFood === food) {
+        newFood = Math.floor(Math.random() * 63 + 0);
+      }
+    }
+    ledArray[newFood].style.backgroundColor = "rgb(0,255,0)";
+    return newFood;
+  }
+
+  function isSpaceFree(newFood) {
+    var free = true;
+    for (var i = 0; i < snake.length; i++) {
+      if (snake[i].position === newFood) {
+        if (free === false) {
+          break;
+        }
+        free = false;
+      }
+    }
+    return free;
+  }
+
+  var hit = false;
+  function hitBody(nextPosition) {
+    for (var i = 0; i < snake.length; i++) {
+      if (snake[i].position === nextPosition) {
+        if (snake[i].tail !== true) {
+          hit = true;
+          alert("GAME OVER");
+        }
+      }
+    }
+    return hit;
+  }
+
+  function addBody() {
+    snake.push({
+      position: 1,
+      color: "rgb(255,0,0)",
+      head: false,
+      tail: true
+    });
+    snake[snake.length - 2].tail = false;
+    food = createFood();
+  }
+
+  var topBorder = [0, 1, 2, 3, 4, 5, 6, 7];
+  var rightBorder = [7, 15, 23, 31, 39, 47, 55, 63];
+  var bottomBorder = [56, 57, 58, 59, 60, 61, 62, 63];
+  var leftBorder = [0, 8, 16, 24, 32, 40, 48, 56];
+
+  var currentBorder;
+  var nextSnakePosition;
+
+  function moveInCurrentDirection(direction) {
+    if (direction === 'up'){
+      currentBorder = topBorder;
+      nextSnakePosition = snake[0].position - 8;
+      currentDirection = 'up';
+    } else if (direction === 'right'){
+      currentBorder = rightBorder;
+      nextSnakePosition = snake[0].position + 1;
+      currentDirection = 'right';
+    } else if (direction === 'down'){
+      currentBorder = bottomBorder;
+      nextSnakePosition = snake[0].position + 8;
+      currentDirection = 'down';
+    } else if (direction === 'left'){
+      currentBorder = leftBorder;
+      nextSnakePosition = snake[0].position - 1;
+      currentDirection = 'left';
+    }
+
+    //make sure it does not ggo outside the border
+    if (!currentBorder.includes(snake[0].position)) {
+      //make sure it does not hit itself
+      if (!hitBody(nextSnakePosition)) {
+        var tempBefore;
+        var tempAfter;
+        for (var i = 0; i < snake.length; i++) {
+          tempBefore = snake[i].position;
+          if (snake[i].head) {
+            if (nextSnakePosition === food) {
+              addBody();
+            }
+            snake[i].position = nextSnakePosition;
+            ledArray[snake[i].position].style.backgroundColor = snake[i].color;
+          } else if (snake[i].tail) {
+            ledArray[snake[i].position].style.backgroundColor = "black";
+            snake[i].position = tempAfter;
+            ledArray[snake[i].position].style.backgroundColor = snake[i].color;
+          } else {
+            snake[i].position = tempAfter;
+            ledArray[snake[i].position].style.backgroundColor = snake[i].color;
+          }
+          tempAfter = tempBefore;
+        }
+        renderSnake();
+      }
+    }
+    else {
+      console.log("game over");
+      hit = true;
+    }
+    }
+
+
+  // function up() {
+
+  //   //make sure it does not ggo outside the border
+  //   if (!topBorder.includes(snake[0].position)) {
+  //     //make sure it does not hit itself
+  //     if (!hitBody(snake[0].position - 8)) {
+  //       var tempBefore;
+  //       var tempAfter;
+  //       for (var i = 0; i < snake.length; i++) {
+  //         tempBefore = snake[i].position;
+  //         if (snake[i].head) {
+  //           if (snake[i].position - 8 === food) {
+  //             addBody();
+  //           }
+  //           snake[i].position = snake[i].position - 8;
+  //           ledArray[snake[i].position].style.backgroundColor = snake[i].color;
+  //         } else if (snake[i].tail) {
+  //           ledArray[snake[i].position].style.backgroundColor = "black";
+  //           snake[i].position = tempAfter;
+  //           ledArray[snake[i].position].style.backgroundColor = snake[i].color;
+  //         } else {
+  //           snake[i].position = tempAfter;
+  //           ledArray[snake[i].position].style.backgroundColor = snake[i].color;
+  //         }
+  //         tempAfter = tempBefore;
+  //       }
+  //       renderSnake();
+  //       currentDirection = "up";
+  //     }
+  //   }
+  //   else {
+  //     console.log("game over");
+  //     hit = true;
+  //   }
+  // }
+
+  // function right() {
+  //   if (!rightBorder.includes(snake[0].position)) {
+  //     if (!hitBody(snake[0].position + 1)) {
+  //       var tempBefore;
+  //       var tempAfter;
+  //       for (var i = 0; i < snake.length; i++) {
+  //         tempBefore = snake[i].position;
+  //         if (snake[i].head) {
+  //           if (snake[i].position + 1 === food) {
+  //             addBody();
+  //           }
+  //           snake[i].position = snake[i].position + 1;
+  //           ledArray[snake[i].position].style.backgroundColor = snake[i].color;
+  //         } else if (snake[i].tail) {
+  //           ledArray[snake[i].position].style.backgroundColor = "black";
+  //           snake[i].position = tempAfter;
+  //           ledArray[snake[i].position].style.backgroundColor = snake[i].color;
+  //         } else {
+  //           snake[i].position = tempAfter;
+  //           ledArray[snake[i].position].style.backgroundColor = snake[i].color;
+  //         }
+  //         tempAfter = tempBefore;
+  //       }
+  //       renderSnake();
+  //       currentDirection = "right";
+  //     }
+  //   }
+  //   else {
+  //     console.log("game over");
+  //     hit = true;
+  //   }
+  // }
+
+  // function down() {
+  //   if (!bottomBorder.includes(snake[0].position)) {
+  //     if (!hitBody(snake[0].position + 8)) {
+  //       var tempBefore;
+  //       var tempAfter;
+  //       for (var i = 0; i < snake.length; i++) {
+  //         tempBefore = snake[i].position;
+  //         if (snake[i].head) {
+  //           if (snake[i].position + 8 === food) {
+  //             addBody();
+  //           }
+  //           snake[i].position = snake[i].position + 8;
+  //           ledArray[snake[i].position].style.backgroundColor = snake[i].color;
+  //         } else if (snake[i].tail) {
+  //           ledArray[snake[i].position].style.backgroundColor = "black";
+  //           snake[i].position = tempAfter;
+  //           ledArray[snake[i].position].style.backgroundColor = snake[i].color;
+  //         } else {
+  //           snake[i].position = tempAfter;
+  //           ledArray[snake[i].position].style.backgroundColor = snake[i].color;
+  //         }
+  //         tempAfter = tempBefore;
+  //       }
+  //       renderSnake();
+  //       currentDirection = "down";
+  //     }
+  //   }
+  //   else {
+  //     console.log("game over");
+  //     hit = true;
+  //   }
+  // }
+
+  // function left() {
+  //   if (!leftBorder.includes(snake[0].position)) {
+  //     if (!hitBody(snake[0].position - 1)) {
+  //       var tempBefore;
+  //       var tempAfter;
+  //       for (var i = 0; i < snake.length; i++) {
+  //         tempBefore = snake[i].position;
+  //         if (snake[i].head) {
+  //           if (snake[i].position - 1 === food) {
+  //             addBody();
+  //           }
+  //           snake[i].position = snake[i].position - 1;
+  //           ledArray[snake[i].position].style.backgroundColor = snake[i].color;
+  //         } else if (snake[i].tail) {
+  //           ledArray[snake[i].position].style.backgroundColor = "black";
+  //           snake[i].position = tempAfter;
+  //           ledArray[snake[i].position].style.backgroundColor = snake[i].color;
+  //         } else {
+  //           snake[i].position = tempAfter;
+  //           ledArray[snake[i].position].style.backgroundColor = snake[i].color;
+  //         }
+  //         tempAfter = tempBefore;
+  //       }
+  //       renderSnake();
+  //       currentDirection = "left";
+  //     }
+  //   }
+  //   else {
+  //     console.log("game over");
+  //     hit = true;
+  //   }
+  // }
+
+  function reset() {
+    for (var i = 0; i < ledArray.length; i++) {
+      ledArray[i].style.backgroundColor = "rgb(0, 0, 0)";
+    }
+  }
+
+  function renderSnake() {
+    for (var i = 0; i < snake.length; i++) {
+      ledArray[snake[i].position].style.backgroundColor = snake[i].color;
+    }
+  }
+</script>
