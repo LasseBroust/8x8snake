@@ -186,9 +186,9 @@ function checkKey(e) {
       while (isSpaceFree(newFood) === false || newFood === food) {
         newFood = Math.floor(Math.random() * 63 + 0);
       }
-    }
     ledArray[newFood].style.backgroundColor = "rgb(0,255,0)";
     return newFood;
+    }
   }
 
   function isSpaceFree(newFood) {
